@@ -2,32 +2,58 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+use function React\Promise\all;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|min:4',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:8',
+            'password' => 'required',
+
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
+        if($validator->fails()){
+            return response()->json([$validator->errors()]);
+        }
 
-//        $token = $user->createToken('LaravelAuthApp')->accessToken;
+        $emailExist = User::where('email', $request->email)->first();
 
-        return response()->json(['message' =>'Registration Complete,Please Login '], 201);
+        if ($emailExist == null) {
+
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password)
+            ]);
+
+            $token = $user->createToken('LaravelAuthApp')->accessToken;
+
+            return response()->json([
+                'token' => $token,
+                'email' => $user->email,
+                'id' => $user->id,
+                'message' => 'Registration Complete'
+            ], 200);
+
+        } else {
+            return response()->json([
+                'error' => 'Duplicate entry'
+            ], 409);
+        }
+
+
     }
 
     public function login(Request $request)
     {
+
         $data = [
             'email' => $request->email,
             'password' => $request->password
@@ -35,9 +61,12 @@ class AuthController extends Controller
 
         if (auth()->attempt($data)) {
             $token = auth()->user()->createToken('LaravelAuthApp')->accessToken;
-            return response()->json(['token' => $token], 200);
+            $id = auth()->user()->id;
+            $email = auth()->user()->email;
+            return response()->json(['token' => $token, 'id' => $id,
+                'email' => $email, 'status' => true], 200);
         } else {
-            return response()->json(['error' => 'Unauthorised'], 401);
+            return response()->json(['error' => 'Unauthenticated'], 401);
         }
     }
 
