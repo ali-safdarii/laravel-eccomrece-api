@@ -19,7 +19,7 @@ class ProductTableSeeder extends Seeder
     {
 
 
-        Product::factory()->count(200)->create();
+        Product::factory()->count(5000)->create();
     }
 
 }
