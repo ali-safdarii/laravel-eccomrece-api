@@ -16,9 +16,9 @@ class CreateBasketsTable extends Migration
         Schema::create('baskets', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('products_id');
-            $table->unsignedBigInteger('user_id');
+            $table->string('email');
             $table->foreign('products_id')->references('id')->on('products')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('email')->references('email')->on('users')->onDelete('cascade');
             $table->integer('quantity');
             $table->timestamps();
         });

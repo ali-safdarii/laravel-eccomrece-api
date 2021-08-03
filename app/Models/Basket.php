@@ -12,7 +12,7 @@ class Basket extends Model
 
 
     protected $fillable = [
-        'user_id', 'products_id','quantity'
+        'email', 'products_id','quantity'
     ];
 
 }
