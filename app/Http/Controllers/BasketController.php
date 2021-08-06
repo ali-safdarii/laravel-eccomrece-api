@@ -16,18 +16,34 @@ class BasketController extends Controller
     {
 
 
-        $data = Basket::updateOrCreate(
-            ['products_id' => $request->products_id,
-                'quantity' => $request->quantity],
-            ['email' => $request->email]
-        );
+        $data = [
+            'products_id' => $request->products_id,
+            'email' => $request->email,
+            'quantity' =>$request->quantity
+
+        ];
 
 
-        if ($data) {
-            return response()->json([
-                'status' => true,
-                'message' => 'Successfully Inserted'
-            ], 201);
+
+        $Basket_exist = Basket::select('*')
+            ->where('products_id',$request->products_id)
+            ->first();
+
+        if($Basket_exist == null)//if doesn't exist: create
+        {
+            Basket::create($request->all());
+
+            return response()->json(['message'=> 'Successfully Adding To Cart'],200);
+        }
+        else //if exist: update
+        {
+
+            // you already retrieved the record and it exists, so just update it.
+            $Basket_exist->update($request->all());
+
+            return response()->json(['message'=> 'Successfully Updating To Cart'
+            ,'data'=>$Basket_exist
+            ],200);
         }
 
 
@@ -39,13 +55,12 @@ class BasketController extends Controller
         $email = ['email' => $request->email];
 
 
-
-                /*
-            SELECT users.*,products.*
-                    FROM baskets
-                        JOIN users ON baskets.email = users.email
-                            join products on baskets.products_id =products.id
-                                where baskets.email ='ali@gmail.com'
+        /*
+    SELECT users.*,products.*
+            FROM baskets
+                JOIN users ON baskets.email = users.email
+                    join products on baskets.products_id =products.id
+                        where baskets.email ='ali@gmail.com' -> user Email
 */
 
 
@@ -56,7 +71,7 @@ class BasketController extends Controller
             ->join("products", function ($join) {
                 $join->on("baskets.products_id", "=", "products.id");
             })
-            ->select("users.*", "products.*")
+            ->select("users.email", "products.*","baskets.quantity")
             ->where("baskets.email", "=", $email)
             ->get();
 

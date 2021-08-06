@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 //php artisan passport:client --personal
 
 //php artisan serve --host=192.168.1.8 --port=8000
-//php artisan serve --host=192.168.1.8 --port=8000
+//php artisan serve --host=192.168.1.12 --port=8000
 class ProductController extends Controller
 {
     public function index(Request $request)

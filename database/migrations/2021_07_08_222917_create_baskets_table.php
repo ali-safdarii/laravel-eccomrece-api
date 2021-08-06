@@ -15,11 +15,13 @@ class CreateBasketsTable extends Migration
     {
         Schema::create('baskets', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('products_id');
-            $table->string('email');
+            $table->unsignedBigInteger('products_id')->nullable();;
             $table->foreign('products_id')->references('id')->on('products')->onDelete('cascade');
+
+            $table->string('email');
             $table->foreign('email')->references('email')->on('users')->onDelete('cascade');
             $table->integer('quantity');
+
             $table->timestamps();
         });
     }

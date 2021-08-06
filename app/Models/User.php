@@ -46,9 +46,6 @@ class User extends Authenticatable
     ];
 
 
-    public function basket()
-    {
-        return $this->hasOne(Basket::class);
-    }
+
 
 }
